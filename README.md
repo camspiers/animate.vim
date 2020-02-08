@@ -18,6 +18,8 @@ to animate window height and width via:
 - `percent` of screen
 - `absolute` size
 
+![](https://i.ibb.co/2dkt3cC/Animate2-opt.gif)
+
 ## Installation
 
 To install `Animate.vim`, use your plugin manager of choice, e.g:
