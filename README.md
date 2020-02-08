@@ -196,6 +196,6 @@ animate#ease_out_quad(elapsed, initial, delta, duration)
 
 Out cubic easing function:
 
-`````
+```
 animate#ease_out_cubic(elapsed, initial, delta, duration)
 ```
