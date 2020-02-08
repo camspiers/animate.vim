@@ -18,7 +18,7 @@ to animate window height and width via:
 - `percent` of screen
 - `absolute` size
 
-![](https://i.ibb.co/2dkt3cC/Animate2-opt.gif)
+![Animated GIF Demo](https://i.ibb.co/2dkt3cC/Animate2-opt.gif)
 
 ## Installation
 
