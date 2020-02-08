@@ -1,0 +1,204 @@
+" Copyright (c) 2020 Spiers, Cam <camspiers@gmail.com>
+" Licensed under the terms of the MIT license.
+
+""
+"  █████╗ ███╗   ██╗██╗███╗   ███╗ █████╗ ████████╗███████╗
+" ██╔══██╗████╗  ██║██║████╗ ████║██╔══██╗╚══██╔══╝██╔════╝
+" ███████║██╔██╗ ██║██║██╔████╔██║███████║   ██║   █████╗  
+" ██╔══██║██║╚██╗██║██║██║╚██╔╝██║██╔══██║   ██║   ██╔══╝  
+" ██║  ██║██║ ╚████║██║██║ ╚═╝ ██║██║  ██║   ██║   ███████╗
+" ╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝╚═╝     ╚═╝╚═╝  ╚═╝   ╚═╝   ╚══════╝
+"
+" A Vim Window Animation Library
+"
+" # Intro
+"
+" `Animate.vim` is a general window animation library for Vim, it provides the ability
+" to animate window height and width via:
+" 
+" - `delta` from current size
+" - `percent` of screen
+" - `absolute` size
+
+if exists('g:animate#loaded')
+  finish
+endif
+
+let g:animate#loaded = 1
+
+if ! exists('g:animate#duration')
+  let g:animate#duration = 300.0
+endif
+
+if exists('g:animate#easing_func')
+  let g:Animate#Ease = function(g:animate#easing_func)
+else
+  let g:Animate#Ease = function('animate#ease_linear')
+endif
+
+let g:animate#timer_id = 0
+
+" Delta Functions {{{
+""
+" @usage width_delta height_delta
+" Animates current window by delta
+function! animate#window_delta(width_delta, height_delta) abort
+  if g:animate#timer_id != 0
+    call timer_stop(g:animate#timer_id)
+  endif
+
+  let animation = {
+    \ 'width_initial': winwidth(0),
+    \ 'height_initial': winheight(0),
+    \ 'width_delta': a:width_delta,
+    \ 'height_delta': a:height_delta,
+    \ 'start_time': animate#time(),
+    \ 'target_window': winnr()
+  \}
+
+  function! animation.step(timer)
+    if self.target_window != winnr()
+      return
+    endif
+
+    let elapsed = min([float2nr(g:animate#duration), float2nr(animate#time() - self.start_time)])
+    let width = float2nr(g:Animate#Ease(elapsed, self.width_initial, self.width_delta, g:animate#duration))
+    let height = float2nr(g:Animate#Ease(elapsed, self.height_initial, self.height_delta, g:animate#duration))
+
+    if height != winheight(0)
+      execute 'resize ' . string(height)
+    endif
+
+    if width != winwidth(0)
+      execute 'vertical resize ' . string(width)
+    endif
+
+    if elapsed < g:animate#duration
+      let g:animate#timer_id = timer_start(16, self.step)
+    else
+      let g:animate#timer_id = 0
+    endif
+  endfunction
+
+  call animation.step(0)
+endfunction
+
+""
+" @usage delta
+" Animates current window by width delta
+function! animate#window_delta_width(delta) abort
+  call animate#window_delta(a:delta, 0)
+endfunction
+
+""
+" @usage delta
+" Animates current window by height delta
+function! animate#window_delta_height(delta) abort
+  call animate#window_delta(0, a:delta)
+endfunction
+" }}}
+
+" Percent Functions {{{
+""
+" @usage width_percent height_percent
+" Animates current window by percent of screen
+function! animate#window_percent(width_percent, height_percent) abort
+  call animate#window_absolute(
+    \ &columns * a:width_percent,
+    \ animate#get_available_height() * a:height_percent,
+  \ )
+endfunction
+
+""
+" @usage percent
+" Animates current window by percent of screen width
+function! animate#window_percent_width(percent) abort
+  call animate#window_absolute(
+    \ &columns * a:percent,
+    \ winheight(0),
+  \ )
+endfunction
+
+""
+" @usage percent
+" Animates current window by percent of screen height
+function! animate#window_percent_height(percent) abort
+  call animate#window_absolute(
+    \ winwidth(0),
+    \ animate#get_available_height() * a:percent,
+  \ )
+endfunction
+" }}}
+
+" Absolute Functions {{{
+""
+" @usage width height
+" Animates current window to absolute size
+function! animate#window_absolute(width, height) abort
+  call animate#window_delta(
+    \ float2nr(a:width - winwidth(0)),
+    \ float2nr(a:height - winheight(0)),
+  \ )
+endfunction
+
+""
+" @usage width
+" Animates current window by absolute width
+function! animate#window_absolute_width(width) abort
+  call animate#window_delta(
+    \ float2nr(a:width - winwidth(0)),
+    \ 0
+  \ )
+endfunction
+
+""
+" @usage height
+" Animates current window by absolute height
+function! animate#window_absolute_height(height) abort
+  call animate#window_delta(
+    \ 0,
+    \ float2nr(a:height - winheight(0)),
+  \ )
+endfunction
+" }}}
+
+" Helper Functions {{{
+""
+" @usage
+" Gets the current time as a float in milliseconds
+function! animate#time()
+  return str2float(reltimestr(reltime())) * 1000.0
+endfunction
+
+""
+" @usage
+" Gets the available height factoring in cmdheight and status line
+function! animate#get_available_height() abort
+  return &lines - &cmdheight - (&laststatus == 0 ? 0 : 1)
+endfunction
+
+""
+" @usage elapsed initial delta duration
+" Linear easing function
+function! animate#ease_linear(elapsed, initial, delta, duration) abort
+  return a:delta * (a:elapsed / a:duration) + a:initial
+endfunction
+
+""
+" @usage elapsed initial delta duration
+" Out quad easing function
+function! animate#ease_out_quad(elapsed, initial, delta, duration) abort
+  let percent = a:elapsed / a:duration
+  return -a:delta * percent * (percent - 2) + a:initial
+endfunction
+
+""
+" @usage elapsed initial delta duration
+" Out cubic easing function
+function! animate#ease_out_cubic(elapsed, initial, delta, duration) abort
+  let new_elapsed = a:elapsed / a:duration - 1
+  return a:delta * (new_elapsed * new_elapsed * new_elapsed + 1) + a:initial
+endfunction
+" }}}
+
+" vim:fdm=marker
