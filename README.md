@@ -41,7 +41,7 @@ nnoremap <silent> <Left>  :call animate#window_delta_width(10)<CR>
 nnoremap <silent> <Right> :call animate#window_delta_width(-10)<CR>
 ```
 
-![](https://i.ibb.co/ZhC4YV3/Animate-Resize.gif)
+![Animate-Resize](https://user-images.githubusercontent.com/51294/74095339-264ae500-4b54-11ea-8293-72896d1068c6.gif)
 
 ### Example: Animated FZF Bottom Drawer
 
@@ -53,7 +53,7 @@ let g:fzf_layout = {
 \ }
 ```
 
-![](https://i.ibb.co/58g2YyZ/Animate-FZF.gif)
+![Animate-FZF](https://user-images.githubusercontent.com/51294/74095349-3e226900-4b54-11ea-8e53-fed09c588351.gif)
 
 ### Example: Animated Neovim Terminal Drawers
 
@@ -68,9 +68,9 @@ function! OpenAnimatedHtop() abort
 endfunction
 ```
 
-![](https://i.ibb.co/YkwB9RL/Animate-Htop.gif)
+![Animate-Htop](https://user-images.githubusercontent.com/51294/74095359-509ca280-4b54-11ea-8390-0329f138898f.gif)
 
-![](https://i.ibb.co/PY7Ygx3/Animate-Lazy-Git.gif)
+![Animate-LazyGit](https://user-images.githubusercontent.com/51294/74095372-63af7280-4b54-11ea-8bfc-c4c94b7f0ca0.gif)
 
 ## Options
 
