@@ -41,6 +41,8 @@ nnoremap <silent> <Left>  :call animate#window_delta_width(10)<CR>
 nnoremap <silent> <Right> :call animate#window_delta_width(-10)<CR>
 ```
 
+![](https://i.ibb.co/ZhC4YV3/Animate-Resize.gif)
+
 ### Example: Animated FZF Bottom Drawer
 
 Here is an example that integrates `Animate.vim` with Fuzzy Finder (FZF) to animate its opening:
@@ -51,7 +53,9 @@ let g:fzf_layout = {
 \ }
 ```
 
-### Example: Animated Neovim Terminal Drawer
+![](https://i.ibb.co/58g2YyZ/Animate-FZF.gif)
+
+### Example: Animated Neovim Terminal Drawers
 
 ```
 function! OpenAnimatedHtop() abort
@@ -63,6 +67,10 @@ function! OpenAnimatedHtop() abort
   call animate#window_percent_height(0.66)
 endfunction
 ```
+
+![](https://i.ibb.co/YkwB9RL/Animate-Htop.gif)
+
+![](https://i.ibb.co/PY7Ygx3/Animate-Lazy-Git.gif)
 
 ## Options
 
