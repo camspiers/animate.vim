@@ -36,15 +36,17 @@ else
   let g:Animate#Ease = function('animate#ease_linear')
 endif
 
-let g:animate#timer_id = 0
+let g:animate#timer_ids = {}
 
 " Delta Functions {{{
 ""
 " @usage width_delta height_delta
 " Animates current window by delta
 function! animate#window_delta(width_delta, height_delta) abort
-  if g:animate#timer_id != 0
-    call timer_stop(g:animate#timer_id)
+  let target_window = winnr()
+  if animate#window_is_animating(target_window)
+    call timer_stop(get(g:animate#timer_ids, target_window, 0))
+    let g:animate#timer_ids[target_window] = 0
   endif
 
   let animation = {
@@ -53,12 +55,13 @@ function! animate#window_delta(width_delta, height_delta) abort
     \ 'width_delta': a:width_delta,
     \ 'height_delta': a:height_delta,
     \ 'start_time': animate#time(),
-    \ 'target_window': winnr()
+    \ 'target_window': target_window,
   \}
 
   function! animation.step(timer)
-    if self.target_window != winnr()
-      return
+    let current_window = winnr()
+    if self.target_window != current_window
+      call animate#window_focus(self.target_window)
     endif
 
     let elapsed = min([float2nr(g:animate#duration), float2nr(animate#time() - self.start_time)])
@@ -74,9 +77,9 @@ function! animate#window_delta(width_delta, height_delta) abort
     endif
 
     if elapsed < g:animate#duration
-      let g:animate#timer_id = timer_start(16, self.step)
+      let g:animate#timer_ids[self.target_window] = timer_start(16, self.step)
     else
-      let g:animate#timer_id = 0
+      let g:animate#timer_ids[self.target_window] = 0
     endif
   endfunction
 
@@ -163,6 +166,21 @@ endfunction
 " }}}
 
 " Helper Functions {{{
+""
+" @usage
+" Focuses window
+function! animate#window_focus(target_window) abort
+  execute a:target_window.'wincmd w'
+endfunction
+
+""
+" @usage
+" Determines with target window is animating
+function! animate#window_is_animating(target_window) abort
+  let timer_id = get(g:animate#timer_ids, a:target_window, 0)
+  return timer_id != 0
+endfunction
+
 ""
 " @usage
 " Gets the current time as a float in milliseconds

@@ -71,7 +71,6 @@ endfunction
 ![Animate-Htop](https://user-images.githubusercontent.com/51294/74095359-509ca280-4b54-11ea-8390-0329f138898f.gif)
 
 ![Animate-LazyGit](https://user-images.githubusercontent.com/51294/74095372-63af7280-4b54-11ea-8bfc-c4c94b7f0ca0.gif)
-
 ## Options
 
 ### Duration
@@ -177,6 +176,18 @@ animate#window_absolute_height(height)
 ```
 
 ### Helper Functions
+
+Focus window:
+
+```
+function! animate#window_focus(target_window) abort
+```
+
+Determines with target window is animating:
+
+```
+function! animate#window_is_animating(target_window) abort
+```
 
 Get the current time as a float in milliseconds:
 
