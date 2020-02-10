@@ -61,7 +61,11 @@ function! animate#window_delta(width_delta, height_delta) abort
   function! animation.step(timer)
     let current_window = winnr()
     if self.target_window != current_window
-      call animate#window_focus(self.target_window)
+      if ! animate#window_focus(self.target_window)
+        call timer_stop(get(g:animate#timer_ids, self.target_window, 0))
+        let g:animate#timer_ids[self.target_window] = 0
+        return
+      endif
     endif
 
     let elapsed = min([float2nr(g:animate#duration), float2nr(animate#time() - self.start_time)])
@@ -170,7 +174,12 @@ endfunction
 " @usage
 " Focuses window
 function! animate#window_focus(target_window) abort
-  execute a:target_window.'wincmd w'
+  if win_getid(a:target_window) == 0
+    return v:false
+  else
+    execute a:target_window.'wincmd w'
+    return v:true
+  endif
 endfunction
 
 ""
