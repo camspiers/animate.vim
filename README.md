@@ -73,6 +73,15 @@ endfunction
 ![Animate-LazyGit](https://user-images.githubusercontent.com/51294/74095372-63af7280-4b54-11ea-8bfc-c4c94b7f0ca0.gif)
 ## Options
 
+### Distribute Space
+
+By default `Animate.vim` distributes space of non-animating windows while resizing
+this can be destructive to intended window sizes. To disable:
+
+```
+let g:animate#distribute_space = 0
+```
+
 ### Duration
 
 Animation duration in milliseconds can be controlled via a global flag:

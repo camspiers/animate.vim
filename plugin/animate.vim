@@ -30,6 +30,10 @@ if ! exists('g:animate#duration')
   let g:animate#duration = 300.0
 endif
 
+if ! exists('g:animate#distribute_space')
+  let g:animate#distribute_space = 1
+endif
+
 if exists('g:animate#easing_func')
   let g:Animate#Ease = function(g:animate#easing_func)
 else
@@ -74,10 +78,20 @@ function! animate#window_delta(width_delta, height_delta) abort
 
     if height != winheight(0)
       execute 'resize ' . string(height)
+      if g:animate#distribute_space
+        set winfixheight
+        wincmd =
+        set nowinfixheight
+      endif
     endif
 
     if width != winwidth(0)
       execute 'vertical resize ' . string(width)
+      if g:animate#distribute_space
+        set winfixwidth
+        wincmd =
+        set nowinfixwidth
+      endif
     endif
 
     if elapsed < g:animate#duration
