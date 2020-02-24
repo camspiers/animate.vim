@@ -76,22 +76,23 @@ function! animate#window_delta(width_delta, height_delta) abort
     let width = float2nr(g:Animate#Ease(elapsed, self.width_initial, self.width_delta, g:animate#duration))
     let height = float2nr(g:Animate#Ease(elapsed, self.height_initial, self.height_delta, g:animate#duration))
 
+    if g:animate#distribute_space
+      set winfixheight
+      set winfixwidth
+    endif
+
     if height != winheight(0)
       execute 'resize ' . string(height)
-      if g:animate#distribute_space
-        set winfixheight
-        wincmd =
-        set nowinfixheight
-      endif
     endif
 
     if width != winwidth(0)
       execute 'vertical resize ' . string(width)
-      if g:animate#distribute_space
-        set winfixwidth
-        wincmd =
-        set nowinfixwidth
-      endif
+    endif
+
+    if g:animate#distribute_space
+      wincmd =
+      set nowinfixheight
+      set nowinfixwidth
     endif
 
     if elapsed < g:animate#duration
