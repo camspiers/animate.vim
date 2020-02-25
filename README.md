@@ -76,7 +76,7 @@ endfunction
 ### Distribute Space
 
 By default `Animate.vim` distributes space of non-animating windows while resizing
-this can be destructive to intended window sizes. To disable:
+this can be destructive to intended window sizes when those sizes aren't fixed. To disable:
 
 ```
 let g:animate#distribute_space = 0

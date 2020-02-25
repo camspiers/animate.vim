@@ -48,11 +48,15 @@ let g:animate#timer_ids = {}
 " Animates current window by delta
 function! animate#window_delta(width_delta, height_delta) abort
   let target_window = winnr()
+
+  " If the window is already animating then we are receiving another animation
+  " request, stop the original timer first
   if animate#window_is_animating(target_window)
     call timer_stop(get(g:animate#timer_ids, target_window, 0))
     let g:animate#timer_ids[target_window] = 0
   endif
 
+  " Store state so that we can access it in the step function
   let animation = {
     \ 'width_initial': winwidth(0),
     \ 'height_initial': winheight(0),
@@ -62,8 +66,13 @@ function! animate#window_delta(width_delta, height_delta) abort
     \ 'target_window': target_window,
   \}
 
+  " The main animation step function that is called on each interval
   function! animation.step(timer)
+    " Store the target window so we can preserve the current window
     let current_window = winnr()
+
+    " If the current window is different from the target window then we want
+    " to focus the current window
     if self.target_window != current_window
       if ! animate#window_focus(self.target_window)
         call timer_stop(get(g:animate#timer_ids, self.target_window, 0))
@@ -72,29 +81,75 @@ function! animate#window_delta(width_delta, height_delta) abort
       endif
     endif
 
+    " Calculate the time elapsed
     let elapsed = min([float2nr(g:animate#duration), float2nr(animate#time() - self.start_time)])
+
+    " Calculate the appropriate width for this amount of elapsed time
     let width = float2nr(g:Animate#Ease(elapsed, self.width_initial, self.width_delta, g:animate#duration))
+
+    " Calculate the appropriate height for this amount of elapsed time
     let height = float2nr(g:Animate#Ease(elapsed, self.height_initial, self.height_delta, g:animate#duration))
 
-    if g:animate#distribute_space
-      set winfixheight
-      set winfixwidth
-    endif
+    " Store old winfix states
+    let winfixheight = &winfixheight
+    let winfixwidth = &winfixwidth
 
+    " Store old fixity states
+    let nowinfixheights = {}
+    let nowinfixwidths = {}
+
+    " Perform the animation if the heights are different
     if height != winheight(0)
+      " Perform the resize
       execute 'resize ' . string(height)
+
+      " Distribute space and clean up our changes to windows
+      if g:animate#distribute_space
+        " Store the widths
+        noautocmd windo if ! &winfixwidth | let nowinfixwidths[winnr()] = 1 | set winfixwidth | endif
+        " Restore focus
+        call animate#window_focus(self.target_window)
+        if winfixheight
+          wincmd =
+        else
+          set winfixheight
+          wincmd =
+          set nowinfixheight
+        endif
+        " Restore the widths
+        noautocmd windo if has_key(nowinfixwidths, winnr()) | set nowinfixwidth | endif
+        " Restore focus
+        call animate#window_focus(self.target_window)
+      endif
     endif
 
+    " Perform the animation if the widths are different
     if width != winwidth(0)
+      " Perform the resize
       execute 'vertical resize ' . string(width)
+
+      " Distribute space and clean up our changes to windows
+      if g:animate#distribute_space
+        " Store the heights
+        noautocmd windo if ! &winfixheight | let nowinfixheights[winnr()] = 1 | set winfixheight | endif
+        " Restore focus
+        call animate#window_focus(self.target_window)
+        if winfixwidth
+          wincmd =
+        else
+          set winfixwidth
+          wincmd =
+          set nowinfixwidth
+        endif
+        " Restore the heights
+        noautocmd windo if has_key(nowinfixheights, winnr()) | set nowinfixheight | endif
+        " Restore focus
+        call animate#window_focus(self.target_window)
+      endif
     endif
 
-    if g:animate#distribute_space
-      wincmd =
-      set nowinfixheight
-      set nowinfixwidth
-    endif
-
+    " If the time elapsed is less than the animation duration then schedule
+    " anoanother step, otherwise remove the timer id
     if elapsed < g:animate#duration
       let g:animate#timer_ids[self.target_window] = timer_start(16, self.step)
     else
@@ -102,6 +157,7 @@ function! animate#window_delta(width_delta, height_delta) abort
     endif
   endfunction
 
+  " Run the first step
   call animation.step(0)
 endfunction
 
