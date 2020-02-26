@@ -110,14 +110,15 @@ function! animate#window_delta(width_delta, height_delta) abort
         " Restore focus
         call animate#window_focus(self.target_window)
         if winfixheight
-          wincmd =
+          noautocmd wincmd =
         else
           set winfixheight
-          wincmd =
+          noautocmd wincmd =
           set nowinfixheight
         endif
         " Restore the widths
         noautocmd windo if has_key(nowinfixwidths, winnr()) | set nowinfixwidth | endif
+       
         " Restore focus
         call animate#window_focus(self.target_window)
       endif
@@ -138,7 +139,7 @@ function! animate#window_delta(width_delta, height_delta) abort
           wincmd =
         else
           set winfixwidth
-          wincmd =
+          noautocmd wincmd =
           set nowinfixwidth
         endif
         " Restore the heights
@@ -248,7 +249,7 @@ function! animate#window_focus(target_window) abort
   if win_getid(a:target_window) == 0
     return v:false
   else
-    execute a:target_window.'wincmd w'
+    execute 'noautocmd '. a:target_window.'wincmd w'
     return v:true
   endif
 endfunction
