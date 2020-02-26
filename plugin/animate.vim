@@ -106,23 +106,21 @@ function! animate#window_delta(width_delta, height_delta) abort
       " Distribute space and clean up our changes to windows
       if g:animate#distribute_space
         " Store the widths
-        set eventignore=all
-        windo if ! &winfixwidth | let nowinfixwidths[winnr()] = 1 | set winfixwidth | endif
+        noautocmd windo if ! &winfixwidth | let nowinfixwidths[winnr()] = 1 | set winfixwidth | endif
         " Restore focus
         call animate#window_focus(self.target_window)
         if winfixheight
-          wincmd =
+          noautocmd wincmd =
         else
           set winfixheight
-          wincmd =
+          noautocmd wincmd =
           set nowinfixheight
         endif
         " Restore the widths
-        windo if has_key(nowinfixwidths, winnr()) | set nowinfixwidth | endif
+        noautocmd windo if has_key(nowinfixwidths, winnr()) | set nowinfixwidth | endif
        
         " Restore focus
         call animate#window_focus(self.target_window)
-        set eventignore=
       endif
     endif
 
@@ -134,22 +132,20 @@ function! animate#window_delta(width_delta, height_delta) abort
       " Distribute space and clean up our changes to windows
       if g:animate#distribute_space
         " Store the heights
-        set eventignore=all
-        windo if ! &winfixheight | let nowinfixheights[winnr()] = 1 | set winfixheight | endif
+        noautocmd windo if ! &winfixheight | let nowinfixheights[winnr()] = 1 | set winfixheight | endif
         " Restore focus
         call animate#window_focus(self.target_window)
         if winfixwidth
           wincmd =
         else
           set winfixwidth
-          wincmd =
+          noautocmd wincmd =
           set nowinfixwidth
         endif
         " Restore the heights
-        windo if has_key(nowinfixheights, winnr()) | set nowinfixheight | endif
+        noautocmd windo if has_key(nowinfixheights, winnr()) | set nowinfixheight | endif
         " Restore focus
         call animate#window_focus(self.target_window)
-        set eventignore=
       endif
     endif
 
@@ -253,7 +249,7 @@ function! animate#window_focus(target_window) abort
   if win_getid(a:target_window) == 0
     return v:false
   else
-    execute a:target_window.'wincmd w'
+    execute 'noautocmd '. a:target_window.'wincmd w'
     return v:true
   endif
 endfunction
