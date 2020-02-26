@@ -106,7 +106,8 @@ function! animate#window_delta(width_delta, height_delta) abort
       " Distribute space and clean up our changes to windows
       if g:animate#distribute_space
         " Store the widths
-        noautocmd windo if ! &winfixwidth | let nowinfixwidths[winnr()] = 1 | set winfixwidth | endif
+        set eventignore=all
+        windo if ! &winfixwidth | let nowinfixwidths[winnr()] = 1 | set winfixwidth | endif
         " Restore focus
         call animate#window_focus(self.target_window)
         if winfixheight
@@ -117,9 +118,11 @@ function! animate#window_delta(width_delta, height_delta) abort
           set nowinfixheight
         endif
         " Restore the widths
-        noautocmd windo if has_key(nowinfixwidths, winnr()) | set nowinfixwidth | endif
+        windo if has_key(nowinfixwidths, winnr()) | set nowinfixwidth | endif
+       
         " Restore focus
         call animate#window_focus(self.target_window)
+        set eventignore=
       endif
     endif
 
@@ -131,7 +134,8 @@ function! animate#window_delta(width_delta, height_delta) abort
       " Distribute space and clean up our changes to windows
       if g:animate#distribute_space
         " Store the heights
-        noautocmd windo if ! &winfixheight | let nowinfixheights[winnr()] = 1 | set winfixheight | endif
+        set eventignore=all
+        windo if ! &winfixheight | let nowinfixheights[winnr()] = 1 | set winfixheight | endif
         " Restore focus
         call animate#window_focus(self.target_window)
         if winfixwidth
@@ -142,9 +146,10 @@ function! animate#window_delta(width_delta, height_delta) abort
           set nowinfixwidth
         endif
         " Restore the heights
-        noautocmd windo if has_key(nowinfixheights, winnr()) | set nowinfixheight | endif
+        windo if has_key(nowinfixheights, winnr()) | set nowinfixheight | endif
         " Restore focus
         call animate#window_focus(self.target_window)
+        set eventignore=
       endif
     endif
 
