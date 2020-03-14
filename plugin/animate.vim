@@ -106,7 +106,7 @@ function! animate#window_delta(width_delta, height_delta) abort
       " Distribute space and clean up our changes to windows
       if g:animate#distribute_space
         " Store the widths
-        noautocmd windo if ! &winfixwidth | let nowinfixwidths[winnr()] = 1 | set winfixwidth | endif
+        noautocmd silent! windo if ! &winfixwidth | let nowinfixwidths[winnr()] = 1 | set winfixwidth | endif
         " Restore focus
         call animate#window_focus(self.target_window)
         if winfixheight
