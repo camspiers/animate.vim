@@ -298,6 +298,15 @@ function! animate#ease_out_cubic(elapsed, initial, delta, duration) abort
   let new_elapsed = a:elapsed / a:duration - 1
   return a:delta * (new_elapsed * new_elapsed * new_elapsed + 1) + a:initial
 endfunction
+
+""
+" @usage elapsed initial delta duration
+" In out sine easing function
+function! animate#ease_in_out_sine(elapsed, initial, delta, duration) abort
+  let percent = a:elapsed / a:duration
+  let pi = 3.14159265359
+  return a:delta * 0.5 * (1 - cos(pi * percent)) + a:initial
+endfunction
 " }}}
 
 " vim:fdm=marker
