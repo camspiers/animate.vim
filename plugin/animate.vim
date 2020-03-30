@@ -37,7 +37,7 @@ endif
 if exists('g:animate#easing_func')
   let g:Animate#Ease = function(g:animate#easing_func)
 else
-  let g:Animate#Ease = function('animate#ease_linear')
+  let g:Animate#Ease = function('animate#ease_in_out_sine')
 endif
 
 let g:animate#timer_ids = {}

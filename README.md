@@ -105,7 +105,7 @@ Currently there are 3 easing options available:
 - `animate#ease_linear`
 - `animate#ease_out_quad`
 - `animate#ease_out_cubic`
-- `animate#ease_in_out_sine`
+- `animate#ease_in_out_sine` (default)
 
 To set a custom easing function:
 
